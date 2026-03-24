@@ -194,8 +194,8 @@ POST   /api/ai/prioritize   ← synchronous JSON response
 
 Refer to the project spec for the full 5-phase build plan. Update this section as phases complete:
 
-- [ ] Phase 1 — Scaffold & Infrastructure
-- [ ] Phase 2 — Core Data Layer
+- [x] Phase 1 — Scaffold & Infrastructure
+- [x] Phase 2 — Core Data Layer
 - [ ] Phase 3 — Core UI
 - [ ] Phase 4 — AI Features
 - [ ] Phase 5 — Polish & Deploy
