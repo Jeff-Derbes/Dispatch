@@ -15,7 +15,7 @@ export async function getProjectTasks(userId: string, projectId: string) {
     .select()
     .from(tasks)
     .where(and(eq(tasks.userId, userId), eq(tasks.projectId, projectId)))
-    .orderBy(asc(tasks.position), asc(tasks.priority));
+    .orderBy(asc(tasks.position));
 }
 
 export async function createTask(
