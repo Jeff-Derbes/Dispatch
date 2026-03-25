@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { type TaskPriority } from '@/components/ui/badge';
 
 interface AddTaskFormProps {
   projectId: string;
@@ -12,7 +13,7 @@ interface AddTaskFormProps {
 export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
   const [show, setShow] = useState(false);
   const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState('medium');
+  const [priority, setPriority] = useState<TaskPriority>('medium');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -66,6 +67,7 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
     >
       <div className="flex items-center gap-2">
         <Input
+          id="task-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Task title..."
@@ -73,8 +75,9 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
           className="flex-1"
         />
         <select
+          id="task-priority"
           value={priority}
-          onChange={(e) => setPriority(e.target.value)}
+          onChange={(e) => setPriority(e.target.value as TaskPriority)}
           className="rounded-md border border-gray-300 px-2 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="low">Low</option>

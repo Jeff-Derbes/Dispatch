@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { type ProjectStatus } from '@/components/ui/badge';
 
 interface NewProjectModalProps {
   onClose: () => void;
@@ -13,9 +14,25 @@ interface NewProjectModalProps {
 export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('active');
+  const [status, setStatus] = useState<ProjectStatus>('active');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  function handleClose() {
+    setName('');
+    setDescription('');
+    setStatus('active');
+    setError('');
+    onClose();
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +45,7 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          description: description || undefined,
+          description: description.trim() === '' ? undefined : description,
           status,
         }),
       });
@@ -48,7 +65,7 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
   }
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget) handleClose();
   }
 
   return (
@@ -62,10 +79,11 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="project-name" className="mb-1 block text-sm font-medium text-gray-700">
               Name <span className="text-red-500">*</span>
             </label>
             <Input
+              id="project-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
@@ -74,10 +92,11 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="project-description" className="mb-1 block text-sm font-medium text-gray-700">
               Description
             </label>
             <Textarea
+              id="project-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description"
@@ -85,12 +104,13 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="project-status" className="mb-1 block text-sm font-medium text-gray-700">
               Status
             </label>
             <select
+              id="project-status"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as ProjectStatus)}
               className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="active">Active</option>
@@ -103,7 +123,7 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             <Button
               type="button"
               variant="secondary"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={loading}
             >
               Cancel

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { type ProjectStatus } from '@/components/ui/badge';
 
 interface SettingsFormProps {
   project: Project;
@@ -16,7 +17,8 @@ export function SettingsForm({ project }: SettingsFormProps) {
   const router = useRouter();
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description ?? '');
-  const [status, setStatus] = useState(project.status);
+  // DB schema uses text type; values are constrained by Zod on write
+  const [status, setStatus] = useState<ProjectStatus>(project.status as ProjectStatus);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
@@ -34,7 +36,7 @@ export function SettingsForm({ project }: SettingsFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          description: description || undefined,
+          description: description.trim() === '' ? null : description,
           status,
         }),
       });
@@ -80,20 +82,22 @@ export function SettingsForm({ project }: SettingsFormProps) {
       <Card className="p-6">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="settings-name" className="mb-1 block text-sm font-medium text-gray-700">
               Name <span className="text-red-500">*</span>
             </label>
             <Input
+              id="settings-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="settings-description" className="mb-1 block text-sm font-medium text-gray-700">
               Description
             </label>
             <Textarea
+              id="settings-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -101,12 +105,13 @@ export function SettingsForm({ project }: SettingsFormProps) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="settings-status" className="mb-1 block text-sm font-medium text-gray-700">
               Status
             </label>
             <select
+              id="settings-status"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as ProjectStatus)}
               className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="active">Active</option>
