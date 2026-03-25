@@ -21,6 +21,26 @@ export const createTaskSchema = z.object({
   description: z.string().optional(),
   status: taskStatus.optional(),
   priority: taskPriority.optional(),
+  aiGenerated: z.boolean().optional(),
+});
+
+export const aiBreakdownSchema = z.object({
+  projectName: z.string().min(1),
+  description: z.string().min(1),
+});
+
+export const aiPrioritizeSchema = z.object({
+  tasks: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        title: z.string(),
+        description: z.string().nullable().optional(),
+        priority: taskPriority,
+        status: taskStatus,
+      })
+    )
+    .min(1),
 });
 
 export const updateTaskSchema = z.object({

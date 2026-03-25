@@ -25,6 +25,9 @@ export async function POST(
     return Response.json({ error: result.error.issues[0].message }, { status: 400 });
   }
 
-  const task = await createTask(userId, id, result.data);
+  const task = await createTask(userId, id, {
+    ...result.data,
+    aiGenerated: result.data.aiGenerated ?? false,
+  });
   return Response.json({ data: task }, { status: 201 });
 }

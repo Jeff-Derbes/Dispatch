@@ -64,7 +64,12 @@ export default async function ProjectPage({
         </Link>
       </div>
 
-      <TaskList projectId={id} tasks={sortedTasks} />
+      <TaskList
+        projectId={id}
+        projectName={project.name}
+        projectDescription={project.description}
+        tasks={sortedTasks}
+      />
     </div>
   );
 }
