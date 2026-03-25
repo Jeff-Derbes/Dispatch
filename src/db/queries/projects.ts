@@ -37,7 +37,7 @@ export async function createProject(
 export async function updateProject(
   userId: string,
   projectId: string,
-  data: Partial<{ name: string; description: string; status: string }>
+  data: Partial<{ name: string; description: string | null; status: string }>
 ) {
   const rows = await db
     .update(projects)
