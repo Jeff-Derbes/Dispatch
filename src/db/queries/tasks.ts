@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "../index";
 import { tasks } from "../schema";
 
@@ -65,6 +65,24 @@ export async function deleteTask(userId: string, taskId: string) {
   await db
     .delete(tasks)
     .where(and(eq(tasks.userId, userId), eq(tasks.id, taskId)));
+}
+
+export async function getTaskCountsByProjectIds(
+  userId: string,
+  projectIds: string[]
+): Promise<Record<string, number>> {
+  if (projectIds.length === 0) return {};
+
+  const rows = await db
+    .select({
+      projectId: tasks.projectId,
+      count: sql<number>`count(*)`,
+    })
+    .from(tasks)
+    .where(and(eq(tasks.userId, userId), inArray(tasks.projectId, projectIds)))
+    .groupBy(tasks.projectId);
+
+  return Object.fromEntries(rows.map((r) => [r.projectId, Number(r.count)]));
 }
 
 export async function reorderTasks(
