@@ -66,6 +66,7 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                     {project.updatedAt.toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
+                      timeZone: 'UTC',
                     })}
                   </span>
                 </div>
