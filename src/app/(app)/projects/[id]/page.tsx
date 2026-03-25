@@ -22,12 +22,10 @@ export default async function ProjectPage({
 
   const { id } = await params;
 
-  const [project, tasks] = await Promise.all([
-    getProjectById(userId, id),
-    getProjectTasks(userId, id),
-  ]);
-
+  const project = await getProjectById(userId, id);
   if (!project) notFound();
+
+  const tasks = await getProjectTasks(userId, id);
 
   // Sort by priority (high → medium → low), then by position within each group
   const sortedTasks = [...tasks].sort((a, b) => {

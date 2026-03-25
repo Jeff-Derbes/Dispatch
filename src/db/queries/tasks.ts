@@ -28,6 +28,13 @@ export async function createTask(
     priority?: string;
   }
 ) {
+  const [{ maxPos }] = await db
+    .select({ maxPos: sql<number | null>`max(${tasks.position})` })
+    .from(tasks)
+    .where(and(eq(tasks.userId, userId), eq(tasks.projectId, projectId)));
+
+  const position = (maxPos ?? -1) + 1;
+
   const rows = await db
     .insert(tasks)
     .values({
@@ -37,6 +44,7 @@ export async function createTask(
       description: data.description,
       status: data.status ?? "backlog",
       priority: data.priority ?? "medium",
+      position,
     })
     .returning();
   return rows[0];
