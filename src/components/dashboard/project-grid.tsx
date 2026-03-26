@@ -32,11 +32,13 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
       </div>
 
       {projects.length === 0 ? (
-        <div className="py-16 text-center text-gray-500">
-          <p className="text-lg font-medium">No projects yet</p>
-          <p className="mt-1 text-sm">Create your first project to get started.</p>
-          <Button className="mt-4" onClick={() => setShowModal(true)}>
-            New Project
+        <div className="rounded-lg border border-dashed border-gray-300 bg-white py-20 text-center">
+          <p className="text-base font-medium text-gray-900">No projects yet</p>
+          <p className="mx-auto mt-1 max-w-xs text-sm text-gray-500">
+            Create a project to start organizing tasks and use AI-assisted planning.
+          </p>
+          <Button className="mt-5" onClick={() => setShowModal(true)}>
+            Create your first project
           </Button>
         </div>
       ) : (

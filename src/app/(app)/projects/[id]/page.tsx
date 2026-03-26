@@ -37,8 +37,8 @@ export default async function ProjectPage({
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between">
-        <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <div className="mb-1 flex items-center gap-3">
             <Link
               href="/dashboard"
@@ -48,7 +48,7 @@ export default async function ProjectPage({
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
+            <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
             {/* project.status is constrained by Zod validation on write */}
             <Badge variant={project.status as ProjectStatus} />
           </div>
@@ -64,7 +64,12 @@ export default async function ProjectPage({
         </Link>
       </div>
 
-      <TaskList projectId={id} tasks={sortedTasks} />
+      <TaskList
+        projectId={id}
+        projectName={project.name}
+        projectDescription={project.description}
+        tasks={sortedTasks}
+      />
     </div>
   );
 }

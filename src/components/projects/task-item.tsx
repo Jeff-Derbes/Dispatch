@@ -119,6 +119,11 @@ export function TaskItem({ task, onMutated }: TaskItemProps) {
           className="min-w-0 flex-1 truncate text-left text-sm font-medium text-gray-900 hover:text-indigo-600"
           type="button"
         >
+          {task.aiGenerated && (
+            <span className="mr-1 text-indigo-400" title="AI-generated">
+              ✦
+            </span>
+          )}
           {task.title}
         </button>
 

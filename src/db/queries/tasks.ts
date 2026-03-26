@@ -26,6 +26,7 @@ export async function createTask(
     description?: string;
     status?: string;
     priority?: string;
+    aiGenerated?: boolean;
   }
 ) {
   const [{ maxPos }] = await db
@@ -45,6 +46,7 @@ export async function createTask(
       status: data.status ?? "backlog",
       priority: data.priority ?? "medium",
       position,
+      aiGenerated: data.aiGenerated ?? false,
     })
     .returning();
   return rows[0];
