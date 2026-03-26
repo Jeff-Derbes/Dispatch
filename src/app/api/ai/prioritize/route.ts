@@ -43,9 +43,8 @@ export async function POST(request: Request) {
   let fullText: string;
   try {
     const message = await client.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 4096,
-      thinking: { type: "adaptive" },
+      model: "claude-haiku-4-5",
+      max_tokens: 2048,
       system: `You are a task prioritization assistant. Priority framework:
 - High: blocking or time-sensitive work.
 - Medium: important but not urgent.

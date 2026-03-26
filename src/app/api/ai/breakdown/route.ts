@@ -31,9 +31,8 @@ export async function POST(request: Request) {
   let fullText: string;
   try {
     const message = await client.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 4096,
-      thinking: { type: "adaptive" },
+      model: "claude-haiku-4-5",
+      max_tokens: 2048,
       system:
         'You are a technical project planning assistant. Return ONLY a JSON array of 4–8 concrete, actionable tasks. Each task: { title, description, priority }. Priority must be "low" | "medium" | "high". No markdown, no explanation — raw JSON array only.',
       messages: [
