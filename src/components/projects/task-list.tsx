@@ -120,11 +120,11 @@ export function TaskList({
         />
       )}
 
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-medium uppercase tracking-wide text-gray-500">
           Tasks ({tasks.length})
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {!showBreakdown && (
             <Button
               onClick={() => setShowBreakdown(true)}
@@ -159,9 +159,12 @@ export function TaskList({
       )}
 
       {tasks.length === 0 ? (
-        <p className="py-4 text-sm text-gray-400">
-          No tasks yet. Add one below.
-        </p>
+        <div className="rounded-lg border border-dashed border-gray-300 bg-white py-10 text-center">
+          <p className="text-sm font-medium text-gray-900">No tasks yet</p>
+          <p className="mt-1 text-xs text-gray-500">
+            Add a task below, or use &ldquo;Break it down&rdquo; to generate tasks with AI.
+          </p>
+        </div>
       ) : suggestions ? (
         // Suggestion overlay — shows current vs suggested priority with rationale
         <div>

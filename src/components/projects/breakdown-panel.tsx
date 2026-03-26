@@ -32,6 +32,7 @@ export function BreakdownPanel({
     initialDescription ?? ''
   );
   const [generating, setGenerating] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [adding, setAdding] = useState(false);
   const [tasks, setTasks] = useState<AiTask[]>([]);
   const [error, setError] = useState('');
@@ -41,6 +42,7 @@ export function BreakdownPanel({
     setGenerating(true);
     setError('');
     setTasks([]);
+    setHasGenerated(false);
 
     try {
       const response = await fetch('/api/ai/breakdown', {
@@ -100,6 +102,7 @@ export function BreakdownPanel({
       setError('Failed to reach the AI service');
     } finally {
       setGenerating(false);
+      setHasGenerated(true);
     }
   }
 
@@ -185,6 +188,12 @@ export function BreakdownPanel({
       </div>
 
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+
+      {hasGenerated && !generating && tasks.length === 0 && !error && (
+        <p className="mt-3 text-sm text-gray-500">
+          No tasks were generated. Try describing the goal in more detail.
+        </p>
+      )}
 
       {tasks.length > 0 && (
         <div className="mt-4">
