@@ -1,5 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createProject } from "@/db/queries/projects";
+import { upsertUser } from "@/db/queries/users";
 import { createProjectSchema } from "@/lib/validations";
 
 export async function POST(request: Request) {
@@ -7,6 +8,10 @@ export async function POST(request: Request) {
   if (!userId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const clerkUser = await currentUser();
+  const email = clerkUser?.emailAddresses[0]?.emailAddress ?? "";
+  await upsertUser(userId, email);
 
   const body = await request.json();
   const result = createProjectSchema.safeParse(body);
