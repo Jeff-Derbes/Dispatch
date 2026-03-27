@@ -1,6 +1,12 @@
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "../index";
-import { tasks } from "../schema";
+import { taskDependencies, tasks, type Task } from "../schema";
+import { computeAllTaskStatuses, type ComputedStatus } from "@/lib/task-state";
+
+export type EnrichedTask = Task & {
+  dependencies: string[]; // dependsOnTaskId values
+  computedStatus: ComputedStatus;
+};
 
 export async function getTaskById(userId: string, taskId: string) {
   const rows = await db
@@ -10,12 +16,43 @@ export async function getTaskById(userId: string, taskId: string) {
   return rows[0] ?? null;
 }
 
-export async function getProjectTasks(userId: string, projectId: string) {
-  return db
-    .select()
-    .from(tasks)
-    .where(and(eq(tasks.userId, userId), eq(tasks.projectId, projectId)))
-    .orderBy(asc(tasks.position));
+export async function getProjectTasks(
+  userId: string,
+  projectId: string
+): Promise<EnrichedTask[]> {
+  const [rawTasks, deps] = await Promise.all([
+    db
+      .select()
+      .from(tasks)
+      .where(and(eq(tasks.userId, userId), eq(tasks.projectId, projectId)))
+      .orderBy(asc(tasks.position)),
+    db
+      .select({
+        taskId: taskDependencies.taskId,
+        dependsOnTaskId: taskDependencies.dependsOnTaskId,
+      })
+      .from(taskDependencies)
+      .where(
+        and(
+          eq(taskDependencies.userId, userId),
+          eq(taskDependencies.projectId, projectId)
+        )
+      ),
+  ]);
+
+  const depMap = new Map<string, string[]>();
+  for (const { taskId, dependsOnTaskId } of deps) {
+    const arr = depMap.get(taskId) ?? [];
+    arr.push(dependsOnTaskId);
+    depMap.set(taskId, arr);
+  }
+
+  const tasksWithDeps = rawTasks.map((t) => ({
+    ...t,
+    dependencies: depMap.get(t.id) ?? [],
+  }));
+
+  return computeAllTaskStatuses(tasksWithDeps);
 }
 
 export async function createTask(
