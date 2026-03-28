@@ -26,6 +26,10 @@ export const createTaskSchema = z.object({
   status: taskStatus.optional(),
   priority: taskPriority.optional(),
   aiGenerated: z.boolean().optional(),
+  effort: taskEffort.optional(),
+  impact: taskImpact.optional(),
+  phase: z.string().nullable().optional(),
+  blockedReason: z.string().nullable().optional(),
 });
 
 export const aiBreakdownSchema = z.object({
@@ -53,6 +57,10 @@ export const updateTaskSchema = z.object({
   status: taskStatus.optional(),
   priority: taskPriority.optional(),
   position: z.number().int().min(0).optional(),
+  effort: taskEffort.optional(),
+  impact: taskImpact.optional(),
+  phase: z.string().nullable().optional(),
+  blockedReason: z.string().nullable().optional(),
 });
 
 export const reorderTasksSchema = z.object({
@@ -71,6 +79,21 @@ export const createDependencySchema = z.object({
   dependsOnTaskId: z.string().uuid(),
 });
 
+export const nextActionUpdateSchema = z.object({
+  taskId: z.string().uuid().nullable(),
+});
+
+export const aiPlanRequestSchema = z.object({
+  projectId: z.string().uuid(),
+  projectName: z.string().min(1),
+  description: z.string().min(1),
+});
+
+export const aiReviewRequestSchema = z.object({
+  projectId: z.string().uuid(),
+  mode: z.enum(["review", "rebalance"]).optional().default("review"),
+});
+
 const aiPlanTaskSchema = z.object({
   clientId: z.string().min(1),
   title: z.string().min(1),
@@ -78,7 +101,7 @@ const aiPlanTaskSchema = z.object({
   priority: taskPriority,
   effort: taskEffort,
   impact: taskImpact,
-  phase: z.string().optional(),
+  phase: z.string().nullable().optional(),
   dependsOnClientIds: z.array(z.string()),
 });
 
