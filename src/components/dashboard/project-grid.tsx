@@ -3,16 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { type Project } from '@/db/schema';
+import { type ProjectSummary } from '@/db/queries/projects';
 import { Badge, type ProjectStatus } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NewProjectModal } from './new-project-modal';
 
-type ProjectWithCount = Project & { taskCount: number };
-
 interface ProjectGridProps {
-  projects: ProjectWithCount[];
+  projects: ProjectSummary[];
 }
 
 export function ProjectGrid({ projects }: ProjectGridProps) {
@@ -58,14 +56,30 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                     {project.description}
                   </p>
                 )}
+
+                {/* Next action */}
+                <p className="mt-2 truncate text-xs text-indigo-600">
+                  {project.nextActionTitle
+                    ? `▶ ${project.nextActionTitle}`
+                    : 'No next action'}
+                </p>
+
                 <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
-                  <span>
-                    {project.taskCount}{' '}
-                    {project.taskCount === 1 ? 'task' : 'tasks'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    {/* Completion indicator */}
+                    <span>
+                      {project.completionState.done} / {project.completionState.total} done
+                    </span>
+                    {/* Blocked count */}
+                    {project.blockedTaskCount > 0 && (
+                      <span className="text-amber-600">
+                        {project.blockedTaskCount} blocked
+                      </span>
+                    )}
+                  </div>
                   <span>
                     Updated{' '}
-                    {project.updatedAt.toLocaleDateString('en-US', {
+                    {new Date(project.updatedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                       timeZone: 'UTC',
