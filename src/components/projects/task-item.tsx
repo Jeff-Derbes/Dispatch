@@ -1,32 +1,63 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { type Task } from '@/db/schema';
-import { Badge, type TaskPriority, type TaskStatus } from '@/components/ui/badge';
+import { Badge, type TaskEffort, type TaskPriority, type TaskStatus } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
 const statusCycle: TaskStatus[] = ['backlog', 'in_progress', 'done'];
 const priorityCycle: TaskPriority[] = ['low', 'medium', 'high'];
 
+export interface TaskDep {
+  id: string; // dependency row ID — used for DELETE /api/projects/[id]/dependencies/[depId]
+  dependsOnTitle: string;
+}
+
 interface TaskItemProps {
   task: Task;
+  // V2 optional additions — omitting preserves backward compat with task-list.tsx
+  deps?: TaskDep[];
+  projectId?: string; // required when deps are provided (for dep removal endpoint)
+  defaultExpanded?: boolean;
   onMutated: () => void;
 }
 
-export function TaskItem({ task, onMutated }: TaskItemProps) {
-  const [expanded, setExpanded] = useState(false);
+export function TaskItem({
+  task,
+  deps,
+  projectId,
+  defaultExpanded = false,
+  onMutated,
+}: TaskItemProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const [description, setDescription] = useState(task.description ?? '');
+  const [blockedReason, setBlockedReason] = useState(task.blockedReason ?? '');
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [loadingPriority, setLoadingPriority] = useState(false);
   const [loadingDesc, setLoadingDesc] = useState(false);
+  const [loadingBlocked, setLoadingBlocked] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [removingDepId, setRemovingDepId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const rowRef = useRef<HTMLDivElement>(null);
 
-  // Sync description state when server data changes (after refresh)
+  // Sync description and blockedReason when server data refreshes
   useEffect(() => {
     setDescription(task.description ?? '');
   }, [task.description]);
+
+  useEffect(() => {
+    setBlockedReason(task.blockedReason ?? '');
+  }, [task.blockedReason]);
+
+  // Expand and scroll when defaultExpanded is toggled externally (e.g. "Open task" in NextActionCard)
+  useEffect(() => {
+    if (defaultExpanded) {
+      setExpanded(true);
+      rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [defaultExpanded]);
 
   async function cycleStatus() {
     const idx = statusCycle.indexOf(task.status as TaskStatus);
@@ -86,6 +117,42 @@ export function TaskItem({ task, onMutated }: TaskItemProps) {
     }
   }
 
+  async function saveBlockedReason() {
+    setLoadingBlocked(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blockedReason: blockedReason || null }),
+      });
+      if (!res.ok) throw new Error();
+      onMutated();
+    } catch {
+      setError('Failed to save blocked reason');
+    } finally {
+      setLoadingBlocked(false);
+    }
+  }
+
+  async function handleRemoveDep(depId: string) {
+    if (!projectId) return;
+    setRemovingDepId(depId);
+    setError('');
+    try {
+      const res = await fetch(
+        `/api/projects/${projectId}/dependencies/${depId}`,
+        { method: 'DELETE' }
+      );
+      if (!res.ok) throw new Error();
+      onMutated();
+    } catch {
+      setError('Failed to remove dependency');
+    } finally {
+      setRemovingDepId(null);
+    }
+  }
+
   async function handleDelete() {
     if (!confirm(`Delete "${task.title}"?`)) return;
     setDeleting(true);
@@ -100,13 +167,20 @@ export function TaskItem({ task, onMutated }: TaskItemProps) {
     }
   }
 
+  const depCount = deps?.length ?? 0;
+
   return (
-    <div className="rounded-md border border-gray-200 bg-white">
-      <div className="flex items-center gap-2 p-3">
+    <div
+      ref={rowRef}
+      id={`task-${task.id}`}
+      className="rounded-md border border-gray-200 bg-white"
+    >
+      <div className="flex items-start gap-2 p-3">
+        {/* Status toggle */}
         <button
           onClick={cycleStatus}
           disabled={loadingStatus}
-          className="flex-shrink-0 disabled:opacity-50"
+          className="mt-0.5 shrink-0 disabled:opacity-50"
           title="Click to cycle status"
           type="button"
         >
@@ -114,51 +188,135 @@ export function TaskItem({ task, onMutated }: TaskItemProps) {
           <Badge variant={task.status as TaskStatus} />
         </button>
 
+        {/* Title + inline signals */}
         <button
           onClick={() => setExpanded((e) => !e)}
-          className="min-w-0 flex-1 truncate text-left text-sm font-medium text-gray-900 hover:text-indigo-600"
+          className="min-w-0 flex-1 text-left"
           type="button"
         >
-          {task.aiGenerated && (
-            <span className="mr-1 text-indigo-400" title="AI-generated">
-              ✦
-            </span>
+          <span className="text-sm font-medium text-gray-900 hover:text-indigo-600">
+            {task.aiGenerated && (
+              <span className="mr-1 text-indigo-400" title="AI-generated">✦</span>
+            )}
+            {task.recommendedNext && (
+              <span className="mr-1 text-amber-500" title="Recommended next">▶</span>
+            )}
+            {task.title}
+          </span>
+          {/* Blocked reason inline */}
+          {task.blockedReason && (
+            <p className="mt-0.5 text-xs text-amber-600">
+              Blocked: {task.blockedReason}
+            </p>
           )}
-          {task.title}
+          {/* AI rationale inline — muted */}
+          {task.aiRationale && (
+            <p className="mt-0.5 text-xs text-gray-400">{task.aiRationale}</p>
+          )}
         </button>
 
-        <button
-          onClick={cyclePriority}
-          disabled={loadingPriority}
-          className="flex-shrink-0 disabled:opacity-50"
-          title="Click to cycle priority"
-          type="button"
-        >
-          {/* task.priority is constrained by Zod validation on write */}
-          <Badge variant={task.priority as TaskPriority} />
-        </button>
+        {/* Right-side badges */}
+        <div className="flex shrink-0 flex-wrap items-center gap-1">
+          {/* Effort badge — values constrained by Zod on write */}
+          <Badge variant={task.effort as TaskEffort} />
+          {/* Priority badge — clickable to cycle */}
+          <button
+            onClick={cyclePriority}
+            disabled={loadingPriority}
+            className="disabled:opacity-50"
+            title="Click to cycle priority"
+            type="button"
+          >
+            <Badge variant={task.priority as TaskPriority} />
+          </button>
+          {/* Dependency count */}
+          {depCount > 0 && (
+            <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500">
+              {depCount} {depCount === 1 ? 'dep' : 'deps'}
+            </span>
+          )}
+        </div>
       </div>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-3 pb-3">
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Add a description..."
-            rows={3}
-            className="mt-3"
-          />
-          {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-          <div className="mt-2 flex items-center justify-between">
+        <div className="border-t border-gray-100 px-3 pb-3 pt-2 space-y-3">
+          {/* Description */}
+          <div>
+            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+              Description
+            </p>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Add a description..."
+              rows={3}
+            />
             <Button
               variant="ghost"
               size="sm"
               onClick={saveDescription}
               loading={loadingDesc}
+              className="mt-1"
+              type="button"
+            >
+              Save description
+            </Button>
+          </div>
+
+          {/* Blocked reason */}
+          <div>
+            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+              Blocked reason
+            </p>
+            <Textarea
+              value={blockedReason}
+              onChange={(e) => setBlockedReason(e.target.value)}
+              placeholder="Why is this blocked? (leave empty to unblock)"
+              rows={2}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={saveBlockedReason}
+              loading={loadingBlocked}
+              className="mt-1"
               type="button"
             >
               Save
             </Button>
+          </div>
+
+          {/* Dependency list */}
+          {deps && deps.length > 0 && (
+            <div>
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+                Dependencies
+              </p>
+              <ul className="space-y-1">
+                {deps.map((dep) => (
+                  <li
+                    key={dep.id}
+                    className="flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-xs text-gray-700"
+                  >
+                    <span>{dep.dependsOnTitle}</span>
+                    <button
+                      onClick={() => handleRemoveDep(dep.id)}
+                      disabled={removingDepId === dep.id}
+                      className="ml-2 text-gray-400 hover:text-red-500 disabled:opacity-50"
+                      type="button"
+                      aria-label={`Remove dependency on ${dep.dependsOnTitle}`}
+                    >
+                      {removingDepId === dep.id ? '…' : '✕'}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {error && <p className="text-xs text-red-600">{error}</p>}
+
+          <div className="flex justify-end">
             <Button
               variant="destructive"
               size="sm"

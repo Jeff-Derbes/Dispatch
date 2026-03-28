@@ -1,16 +1,10 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getProjectById } from '@/db/queries/projects';
-import { getProjectTasks } from '@/db/queries/tasks';
+import { getProjectDetails } from '@/db/queries/projects';
+import { getTaskDependencies } from '@/db/queries/dependencies';
 import { Badge, type ProjectStatus } from '@/components/ui/badge';
-import { TaskList } from '@/components/projects/task-list';
-
-const priorityOrder: Record<string, number> = {
-  high: 0,
-  medium: 1,
-  low: 2,
-};
+import { ProjectContent } from '@/components/projects/project-content';
 
 export default async function ProjectPage({
   params,
@@ -22,21 +16,25 @@ export default async function ProjectPage({
 
   const { id } = await params;
 
-  const project = await getProjectById(userId, id);
-  if (!project) notFound();
+  const [details, rawDeps] = await Promise.all([
+    getProjectDetails(userId, id),
+    getTaskDependencies(userId, id),
+  ]);
 
-  const tasks = await getProjectTasks(userId, id);
+  if (!details) notFound();
 
-  // Sort by priority (high → medium → low), then by position within each group
-  const sortedTasks = [...tasks].sort((a, b) => {
-    const pDiff =
-      (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1);
-    if (pDiff !== 0) return pDiff;
-    return a.position - b.position;
-  });
+  const { project, tasks, latestReview } = details;
+
+  // Pass only the fields that the client needs (avoids sending userId over the wire)
+  const allDeps = rawDeps.map((d) => ({
+    id: d.id,
+    taskId: d.taskId,
+    dependsOnTaskId: d.dependsOnTaskId,
+  }));
 
   return (
     <div>
+      {/* Project header */}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="mb-1 flex items-center gap-3">
@@ -48,7 +46,9 @@ export default async function ProjectPage({
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
+            <h1 className="truncate text-2xl font-bold text-gray-900">
+              {project.name}
+            </h1>
             {/* project.status is constrained by Zod validation on write */}
             <Badge variant={project.status as ProjectStatus} />
           </div>
@@ -64,11 +64,12 @@ export default async function ProjectPage({
         </Link>
       </div>
 
-      <TaskList
-        projectId={id}
-        projectName={project.name}
-        projectDescription={project.description}
-        tasks={sortedTasks}
+      {/* V2 execution cockpit — client component manages UI state */}
+      <ProjectContent
+        project={project}
+        tasks={tasks}
+        allDeps={allDeps}
+        latestReview={latestReview}
       />
     </div>
   );
