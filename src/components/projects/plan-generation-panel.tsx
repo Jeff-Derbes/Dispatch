@@ -191,12 +191,12 @@ export function PlanGenerationPanel({
   const selectedCount = tasks.filter((t) => t.selected).length;
 
   return (
-    <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-indigo-900">✦ Generate plan</h3>
+    <div className="rounded-xl border border-indigo-500/20 bg-indigo-950/30 p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-indigo-300">✦ Generate plan</h3>
         <button
           onClick={onClose}
-          className="text-sm text-gray-400 hover:text-gray-600"
+          className="text-sm text-zinc-600 transition-colors hover:text-zinc-300"
           type="button"
           aria-label="Close panel"
         >
@@ -229,10 +229,10 @@ export function PlanGenerationPanel({
         )}
       </div>
 
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
 
       {hasGenerated && !generating && tasks.length === 0 && !error && (
-        <p className="mt-3 text-sm text-gray-500">
+        <p className="mt-3 text-sm text-zinc-500">
           No tasks were generated. Try describing the goal in more detail.
         </p>
       )}
@@ -245,14 +245,14 @@ export function PlanGenerationPanel({
               return (
                 <div
                   key={task.clientId}
-                  className="rounded-md border border-gray-200 bg-white p-3"
+                  className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-3"
                 >
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={task.selected}
                       onChange={() => toggleTask(task.clientId)}
-                      className="mt-1 h-4 w-4 shrink-0 accent-indigo-600"
+                      className="mt-1 h-4 w-4 shrink-0 accent-indigo-500"
                     />
                     <div className="min-w-0 flex-1">
                       {/* Inline-editable title */}
@@ -261,7 +261,7 @@ export function PlanGenerationPanel({
                         onChange={(e) => updateTitle(task.clientId, e.target.value)}
                         className="mb-2 text-sm font-medium"
                       />
-                      <div className="flex flex-wrap items-center gap-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-xs text-indigo-400">✦</span>
                         {/* effort is constrained by Zod validation on the AI response */}
                         <Badge variant={task.effort as TaskEffort} />
@@ -269,12 +269,12 @@ export function PlanGenerationPanel({
                         <Badge variant={task.impact as TaskPriority} />
                         <Badge variant={task.priority as TaskPriority} />
                         {task.phase && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-500">
+                          <span className="inline-flex items-center rounded-md bg-zinc-700 px-2 py-0.5 text-xs font-medium text-zinc-400">
                             {task.phase}
                           </span>
                         )}
                         {task.dependsOnClientIds.length > 0 && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500">
+                          <span className="inline-flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-500">
                             {task.dependsOnClientIds.length}{' '}
                             {task.dependsOnClientIds.length === 1 ? 'dep' : 'deps'}
                           </span>
@@ -282,7 +282,7 @@ export function PlanGenerationPanel({
                       </div>
                       {/* Deselect warning — show but do not block */}
                       {dropped.length > 0 && (
-                        <p className="mt-1 text-xs text-amber-600">
+                        <p className="mt-1 text-xs text-amber-400">
                           {dropped.map((title) => (
                             <span key={title}>
                               Dependency on &ldquo;{title}&rdquo; will be dropped.{' '}

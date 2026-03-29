@@ -27,6 +27,13 @@ const SECTION_LABELS: Record<string, string> = {
   done: 'Done',
 };
 
+const SECTION_ACCENT: Record<string, string> = {
+  ready: 'bg-emerald-400',
+  blocked: 'bg-amber-400',
+  in_progress: 'bg-indigo-400',
+  done: 'bg-zinc-600',
+};
+
 export function TaskListGrouped({
   projectId,
   tasks,
@@ -65,14 +72,14 @@ export function TaskListGrouped({
 
   return (
     <div>
-      <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-500">
+      <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-zinc-600">
         Tasks ({totalCount})
       </h2>
 
       {totalCount === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white py-10 text-center">
-          <p className="text-sm font-medium text-gray-900">No tasks yet</p>
-          <p className="mt-1 text-xs text-gray-500">
+        <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/40 py-10 text-center">
+          <p className="text-sm font-medium text-zinc-400">No tasks yet</p>
+          <p className="mt-1 text-xs text-zinc-600">
             Add a task below, or use Generate plan to build one with AI.
           </p>
         </div>
@@ -82,10 +89,18 @@ export function TaskListGrouped({
             if (sectionTasks.length === 0) return null;
             return (
               <div key={key}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  {SECTION_LABELS[key]} ({sectionTasks.length})
-                </p>
-                <div className="space-y-1">
+                <div className="mb-2 flex items-center gap-2">
+                  <span
+                    className={`inline-block h-1.5 w-1.5 rounded-full ${SECTION_ACCENT[key]}`}
+                  />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    {SECTION_LABELS[key]}
+                    <span className="ml-1.5 font-normal text-zinc-700">
+                      ({sectionTasks.length})
+                    </span>
+                  </p>
+                </div>
+                <div className="space-y-1.5">
                   {sectionTasks.map((task) => (
                     <TaskItem
                       key={task.id}
@@ -103,7 +118,7 @@ export function TaskListGrouped({
         </div>
       )}
 
-      <div className="mt-4">
+      <div className="mt-5">
         <AddTaskForm projectId={projectId} onAdded={handleMutation} />
       </div>
     </div>

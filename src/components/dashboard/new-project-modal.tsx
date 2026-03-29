@@ -70,17 +70,15 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
-      <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          New Project
-        </h2>
+      <div className="mx-4 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
+        <h2 className="mb-5 text-lg font-semibold text-zinc-100">New Project</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="project-name" className="mb-1 block text-sm font-medium text-gray-700">
-              Name <span className="text-red-500">*</span>
+            <label htmlFor="project-name" className="mb-1.5 block text-sm font-medium text-zinc-300">
+              Name <span className="text-red-400">*</span>
             </label>
             <Input
               id="project-name"
@@ -92,7 +90,7 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             />
           </div>
           <div>
-            <label htmlFor="project-description" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="project-description" className="mb-1.5 block text-sm font-medium text-zinc-300">
               Description
             </label>
             <Textarea
@@ -104,22 +102,22 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             />
           </div>
           <div>
-            <label htmlFor="project-status" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="project-status" className="mb-1.5 block text-sm font-medium text-zinc-300">
               Status
             </label>
             <select
               id="project-status"
               value={status}
               onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="active">Active</option>
               <option value="on_hold">On Hold</option>
               <option value="completed">Completed</option>
             </select>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="flex justify-end gap-2 pt-2">
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          <div className="flex justify-end gap-2 pt-1">
             <Button
               type="button"
               variant="secondary"

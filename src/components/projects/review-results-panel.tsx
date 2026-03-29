@@ -108,12 +108,12 @@ export function ReviewResultsPanel({
   }
 
   return (
-    <Card className="p-4 space-y-5">
+    <Card className="space-y-5 p-5">
       <div className="flex items-start justify-between gap-4">
-        <p className="text-sm font-semibold text-gray-900">Review results</p>
+        <p className="text-sm font-semibold text-zinc-100">Review results</p>
         <button
           onClick={onDismiss}
-          className="text-sm text-gray-400 hover:text-gray-600"
+          className="text-sm text-zinc-600 transition-colors hover:text-zinc-300"
           type="button"
           aria-label="Dismiss review"
         >
@@ -121,21 +121,23 @@ export function ReviewResultsPanel({
         </button>
       </div>
 
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-red-400">{error}</p>}
 
       {/* Summary */}
       <div>
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">Summary</p>
-        <p className="text-sm text-gray-700">{review.summary}</p>
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+          Summary
+        </p>
+        <p className="text-sm text-zinc-300">{review.summary}</p>
       </div>
 
       {/* Next action */}
       <div>
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
           Next Action
         </p>
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-gray-900">{nextActionTitle}</p>
+          <p className="text-sm font-medium text-zinc-100">{nextActionTitle}</p>
           <Button
             size="sm"
             variant="secondary"
@@ -152,7 +154,7 @@ export function ReviewResultsPanel({
       {review.rebalance.length > 0 && (
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-600">
               Rebalance suggestions
             </p>
             <Button
@@ -167,16 +169,16 @@ export function ReviewResultsPanel({
           </div>
           <ul className="space-y-2">
             {review.rebalance.map((s) => (
-              <li key={s.taskId} className="rounded bg-gray-50 p-3 text-sm">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-medium text-gray-900">
+              <li key={s.taskId} className="rounded-lg bg-zinc-800 p-3 text-sm">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-zinc-200">
                     {titleMap.get(s.taskId) ?? s.taskId}
                   </span>
-                  <span className="text-gray-400">→</span>
+                  <span className="text-zinc-600">→</span>
                   {/* suggestedPriority is constrained by Zod validation on the AI response */}
                   <Badge variant={s.suggestedPriority as TaskPriority} />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">{s.rationale}</p>
+                <p className="mt-1 text-xs text-zinc-500">{s.rationale}</p>
               </li>
             ))}
           </ul>
@@ -186,19 +188,19 @@ export function ReviewResultsPanel({
       {/* Gap tasks */}
       {review.gaps.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">
             Suggested missing tasks
           </p>
           <ul className="space-y-2">
             {review.gaps.map((gap, idx) => (
               <li
                 key={idx}
-                className="flex items-start justify-between gap-3 rounded bg-gray-50 p-3 text-sm"
+                className="flex items-start justify-between gap-3 rounded-lg bg-zinc-800 p-3 text-sm"
               >
                 <div className="min-w-0">
-                  <p className="font-medium text-gray-900">{gap.title}</p>
+                  <p className="font-medium text-zinc-200">{gap.title}</p>
                   {gap.description && (
-                    <p className="mt-0.5 text-xs text-gray-500">{gap.description}</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">{gap.description}</p>
                   )}
                 </div>
                 <Button

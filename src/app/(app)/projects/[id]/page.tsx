@@ -34,31 +34,32 @@ export default async function ProjectPage({
 
   return (
     <div>
+      {/* Breadcrumb */}
+      <nav className="mb-4 flex items-center gap-2 text-sm text-zinc-600" aria-label="Breadcrumb">
+        <Link href="/dashboard" className="transition-colors hover:text-zinc-300">
+          Projects
+        </Link>
+        <span>/</span>
+        <span className="text-zinc-400">{project.name}</span>
+      </nav>
+
       {/* Project header */}
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="mb-1 flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="text-sm text-gray-400 hover:text-gray-600"
-            >
-              ← Dashboard
-            </Link>
-          </div>
           <div className="flex items-center gap-3">
-            <h1 className="truncate text-2xl font-bold text-gray-900">
+            <h1 className="truncate text-3xl font-bold tracking-tight text-zinc-100">
               {project.name}
             </h1>
             {/* project.status is constrained by Zod validation on write */}
             <Badge variant={project.status as ProjectStatus} />
           </div>
           {project.description && (
-            <p className="mt-1 text-gray-500">{project.description}</p>
+            <p className="mt-2 text-zinc-500">{project.description}</p>
           )}
         </div>
         <Link
           href={`/projects/${id}/settings`}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="shrink-0 text-sm text-zinc-600 transition-colors hover:text-zinc-300"
         >
           Settings
         </Link>
