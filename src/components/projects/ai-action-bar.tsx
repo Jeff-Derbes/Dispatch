@@ -102,11 +102,11 @@ export function AiActionBar({
       )}
 
       {reviewError && (
-        <p className="text-xs text-red-600">{reviewError}</p>
+        <p className="text-xs text-red-400">{reviewError}</p>
       )}
 
       {/* Action buttons */}
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3">
         <Button
           variant="ghost"
           size="sm"

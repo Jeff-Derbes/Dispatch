@@ -21,11 +21,11 @@ export default async function ProjectSettingsPage({
       <div className="mb-6">
         <Link
           href={`/projects/${id}`}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="text-sm text-zinc-600 transition-colors hover:text-zinc-300"
         >
           ← Back to project
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-gray-900">
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-100">
           Project Settings
         </h1>
       </div>

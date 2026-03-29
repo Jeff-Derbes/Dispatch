@@ -9,20 +9,20 @@ export type BadgeVariant = ProjectStatus | TaskStatus | TaskPriority | TaskEffor
 
 const variantClasses: Record<BadgeVariant, string> = {
   // Project status
-  active: 'bg-green-100 text-green-700',
-  on_hold: 'bg-yellow-100 text-yellow-700',
-  completed: 'bg-gray-100 text-gray-600',
+  active: 'bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/25',
+  on_hold: 'bg-amber-500/15 text-amber-400 ring-1 ring-inset ring-amber-500/25',
+  completed: 'bg-zinc-700/50 text-zinc-400',
   // Task status
-  backlog: 'bg-slate-100 text-slate-600',
-  in_progress: 'bg-blue-100 text-blue-700',
-  done: 'bg-emerald-100 text-emerald-700',
+  backlog: 'bg-zinc-800 text-zinc-500',
+  in_progress: 'bg-indigo-500/15 text-indigo-400 ring-1 ring-inset ring-indigo-500/25',
+  done: 'bg-emerald-500/12 text-emerald-500',
   // Task priority / impact (shared scale)
-  low: 'bg-gray-100 text-gray-500',
-  medium: 'bg-orange-100 text-orange-600',
-  high: 'bg-red-100 text-red-600',
+  low: 'bg-zinc-800 text-zinc-500',
+  medium: 'bg-orange-500/15 text-orange-400',
+  high: 'bg-red-500/15 text-red-400 ring-1 ring-inset ring-red-500/25',
   // Task effort (small/large; medium reuses priority)
-  small: 'bg-sky-100 text-sky-700',
-  large: 'bg-violet-100 text-violet-700',
+  small: 'bg-sky-500/15 text-sky-400',
+  large: 'bg-violet-500/15 text-violet-400',
 };
 
 const variantLabels: Record<BadgeVariant, string> = {
@@ -48,7 +48,7 @@ export function Badge({ variant, className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
+        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
         variantClasses[variant],
         className,
       )}

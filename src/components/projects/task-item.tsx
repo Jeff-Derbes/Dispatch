@@ -173,9 +173,9 @@ export function TaskItem({
     <div
       ref={rowRef}
       id={`task-${task.id}`}
-      className="rounded-md border border-gray-200 bg-white"
+      className="rounded-lg border border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700 hover:bg-zinc-800/60"
     >
-      <div className="flex items-start gap-2 p-3">
+      <div className="flex items-start gap-3 px-4 py-3">
         {/* Status toggle */}
         <button
           onClick={cycleStatus}
@@ -194,29 +194,29 @@ export function TaskItem({
           className="min-w-0 flex-1 text-left"
           type="button"
         >
-          <span className="text-sm font-medium text-gray-900 hover:text-indigo-600">
+          <span className="text-sm font-medium text-zinc-200 transition-colors hover:text-zinc-100">
             {task.aiGenerated && (
               <span className="mr-1 text-indigo-400" title="AI-generated">✦</span>
             )}
             {task.recommendedNext && (
-              <span className="mr-1 text-amber-500" title="Recommended next">▶</span>
+              <span className="mr-1 text-amber-400" title="Recommended next">▶</span>
             )}
             {task.title}
           </span>
           {/* Blocked reason inline */}
           {task.blockedReason && (
-            <p className="mt-0.5 text-xs text-amber-600">
+            <p className="mt-0.5 text-xs text-amber-500">
               Blocked: {task.blockedReason}
             </p>
           )}
           {/* AI rationale inline — muted */}
           {task.aiRationale && (
-            <p className="mt-0.5 text-xs text-gray-400">{task.aiRationale}</p>
+            <p className="mt-0.5 text-xs text-zinc-600">{task.aiRationale}</p>
           )}
         </button>
 
         {/* Right-side badges */}
-        <div className="flex shrink-0 flex-wrap items-center gap-1">
+        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
           {/* Effort badge — values constrained by Zod on write */}
           <Badge variant={task.effort as TaskEffort} />
           {/* Priority badge — clickable to cycle */}
@@ -231,7 +231,7 @@ export function TaskItem({
           </button>
           {/* Dependency count */}
           {depCount > 0 && (
-            <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500">
+            <span className="inline-flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-500">
               {depCount} {depCount === 1 ? 'dep' : 'deps'}
             </span>
           )}
@@ -239,10 +239,10 @@ export function TaskItem({
       </div>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-3 pb-3 pt-2 space-y-3">
+        <div className="space-y-4 border-t border-zinc-800 px-4 pb-4 pt-3">
           {/* Description */}
           <div>
-            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
               Description
             </p>
             <Textarea
@@ -256,7 +256,7 @@ export function TaskItem({
               size="sm"
               onClick={saveDescription}
               loading={loadingDesc}
-              className="mt-1"
+              className="mt-1.5"
               type="button"
             >
               Save description
@@ -265,7 +265,7 @@ export function TaskItem({
 
           {/* Blocked reason */}
           <div>
-            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
               Blocked reason
             </p>
             <Textarea
@@ -279,7 +279,7 @@ export function TaskItem({
               size="sm"
               onClick={saveBlockedReason}
               loading={loadingBlocked}
-              className="mt-1"
+              className="mt-1.5"
               type="button"
             >
               Save
@@ -289,20 +289,20 @@ export function TaskItem({
           {/* Dependency list */}
           {deps && deps.length > 0 && (
             <div>
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
                 Dependencies
               </p>
               <ul className="space-y-1">
                 {deps.map((dep) => (
                   <li
                     key={dep.id}
-                    className="flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-xs text-gray-700"
+                    className="flex items-center justify-between rounded-lg bg-zinc-800 px-3 py-1.5 text-xs text-zinc-400"
                   >
                     <span>{dep.dependsOnTitle}</span>
                     <button
                       onClick={() => handleRemoveDep(dep.id)}
                       disabled={removingDepId === dep.id}
-                      className="ml-2 text-gray-400 hover:text-red-500 disabled:opacity-50"
+                      className="ml-2 text-zinc-600 transition-colors hover:text-red-400 disabled:opacity-50"
                       type="button"
                       aria-label={`Remove dependency on ${dep.dependsOnTitle}`}
                     >
@@ -314,7 +314,7 @@ export function TaskItem({
             </div>
           )}
 
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && <p className="text-xs text-red-400">{error}</p>}
 
           <div className="flex justify-end">
             <Button
