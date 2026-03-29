@@ -16,7 +16,7 @@ export interface TaskDep {
 
 interface TaskItemProps {
   task: Task;
-  // V2 optional additions — omitting preserves backward compat with task-list.tsx
+  // Optional — not all callers supply dependency data
   deps?: TaskDep[];
   projectId?: string; // required when deps are provided (for dep removal endpoint)
   defaultExpanded?: boolean;

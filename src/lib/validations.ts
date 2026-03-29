@@ -32,10 +32,6 @@ export const createTaskSchema = z.object({
   blockedReason: z.string().nullable().optional(),
 });
 
-export const aiBreakdownSchema = z.object({
-  projectName: z.string().min(1),
-  description: z.string().min(1),
-});
 
 export const aiPrioritizeSchema = z.object({
   tasks: z
