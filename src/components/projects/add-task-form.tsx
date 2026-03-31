@@ -52,7 +52,7 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
       <button
         onClick={() => setShow(true)}
         type="button"
-        className="flex items-center gap-1 py-2 text-sm text-gray-400 hover:text-indigo-600"
+        className="flex items-center gap-1.5 py-2 text-sm text-zinc-600 transition-colors hover:text-indigo-400"
       >
         <span className="text-base leading-none">+</span>
         <span>Add task</span>
@@ -63,7 +63,7 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-md border border-dashed border-gray-300 p-3"
+      className="rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 p-3"
     >
       <div className="flex items-center gap-2">
         <Input
@@ -78,7 +78,7 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
           id="task-priority"
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
-          className="rounded-md border border-gray-300 px-2 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-2 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -100,7 +100,7 @@ export function AddTaskForm({ projectId, onAdded }: AddTaskFormProps) {
           Cancel
         </Button>
       </div>
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </form>
   );
 }

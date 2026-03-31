@@ -8,6 +8,13 @@
       "when": 1774356080844,
       "tag": "0000_free_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774555689877,
+      "tag": "0001_low_talkback",
+      "breakpoints": true
     }
   ]
 }
